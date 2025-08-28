@@ -137,7 +137,6 @@ const LoginForm: React.FC = () => {
           <div className="text-xs text-blue-700 space-y-1">
             <p><strong>Admin:</strong> admin@logistics.com / admin123</p>
             <p><strong>Usuario:</strong> user@logistics.com / user123</p>
-            <p><strong>Manager:</strong> manager@logistics.com / manager123</p>
           </div>
         </div>
       </div>
@@ -146,3 +145,4 @@ const LoginForm: React.FC = () => {
 };
 
 export default LoginForm;
+
