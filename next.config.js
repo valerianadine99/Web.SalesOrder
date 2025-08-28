@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Enable static export output so the app can run as a SPA on static hosts
+  output: 'export',
   images: {
+    // Disable image optimization for static export/GitHub Pages compatibility
+    unoptimized: true,
     domains: ['localhost'],
   },
   env: {
