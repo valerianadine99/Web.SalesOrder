@@ -6,17 +6,25 @@ import { LoginRequest, LoginResponse, User } from '@/types/api';
 export class AuthService {
   // Login del usuario
   static async login(credentials: LoginRequest): Promise<LoginResponse> {
+    console.log('AuthService: Iniciando login con credenciales:', { ...credentials, password: '***' });
     try {
-      const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+      console.log('AuthService: Haciendo POST a /Auth/login...');
+      const response = await apiClient.post<LoginResponse>('/Auth/login', credentials);
+      console.log('AuthService: Respuesta del servidor:', response);
       
       // Guardar el token en localStorage y en el cliente API
       if (response.token) {
+        console.log('AuthService: Guardando token...');
         setStoredToken(response.token);
         apiClient.setToken(response.token);
+        console.log('AuthService: Token guardado correctamente');
+      } else {
+        console.warn('AuthService: No se recibió token en la respuesta');
       }
       
       return response;
     } catch (error) {
+      console.error('AuthService: Error en login:', error);
       throw error;
     }
   }

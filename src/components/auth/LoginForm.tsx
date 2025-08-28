@@ -10,7 +10,7 @@ import { Truck, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
+  username: z.string().min(1, 'El email es requerido').email('Email inválido'),
   password: z.string().min(1, 'La contraseña es requerida'),
 });
 
@@ -30,10 +30,12 @@ const LoginForm: React.FC = () => {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('Enviando datos:', data); // Debug
     try {
-      await login(data.email, data.password);
-      toast.success('¡Bienvenido!');
+      await login(data.username, data.password);
+      toast('¡Bienvenido!', { icon: '✅' });
     } catch (error: any) {
+      console.error('Error en login:', error); // Debug
       if (error.status === 401) {
         setError('root', {
           message: 'Credenciales inválidas. Por favor, verifica tu email y contraseña.',
@@ -43,7 +45,7 @@ const LoginForm: React.FC = () => {
           message: 'Error al iniciar sesión. Por favor, intenta nuevamente.',
         });
       }
-      toast.error('Error al iniciar sesión');
+      toast('Error al iniciar sesión', { icon: '❌' });
     }
   };
 
@@ -68,8 +70,8 @@ const LoginForm: React.FC = () => {
               label="Email"
               type="email"
               placeholder="tu@email.com"
-              error={errors.email?.message}
-              {...register('email')}
+              error={errors.username?.message}
+              {...register('username')}
             />
 
             <div className="relative">

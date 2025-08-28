@@ -10,8 +10,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, helperText, id, ...props }, ref) => {
-    const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+  ({ className, label, error, helperText, id, name, ...props }, ref) => {
+    // Usar el id proporcionado, o generar uno basado en el name, o usar un fallback estático
+    const inputId = id || (name ? `input-${name}` : 'input-field');
     
     return (
       <div className="w-full">
@@ -25,6 +26,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         )}
         <input
           id={inputId}
+          name={name}
           className={cn(
             'flex h-10 w-full rounded-md border border-secondary-300 bg-white px-3 py-2 text-sm',
             'placeholder:text-secondary-400',

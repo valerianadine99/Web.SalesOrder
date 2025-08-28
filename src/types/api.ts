@@ -2,84 +2,56 @@
 
 export interface Order {
   id: number;
-  orderDate: string;
   customerName: string;
   customerEmail: string;
-  total: number;
-  status: OrderStatus;
-  createdAt: string;
-  updatedAt?: string;
+  orderDate: string;
+  orderDetails: OrderDetail[];
   createdBy: string;
   updatedBy?: string;
-  isDeleted: boolean;
-  orderDetails: OrderDetail[];
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface OrderDetail {
   id: number;
-  orderId: number;
   productName: string;
   productCode: string;
   quantity: number;
   unitPrice: number;
   subtotal: number;
-  createdAt: string;
-  updatedAt?: string;
-  createdBy: string;
-  updatedBy?: string;
-  isDeleted: boolean;
 }
 
-export enum OrderStatus {
-  Pending = 'Pending',
-  Confirmed = 'Confirmed',
-  Shipped = 'Shipped',
-  Delivered = 'Delivered',
-  Cancelled = 'Cancelled'
-}
-
-export interface CreateOrderRequest {
-  customerName: string;
-  customerEmail: string;
-  orderDate: string;
-  orderDetails: CreateOrderDetailRequest[];
-}
-
-export interface CreateOrderDetailRequest {
+export interface CreateOrderDetailDto {
   productName: string;
   productCode: string;
   quantity: number;
   unitPrice: number;
 }
 
-export interface UpdateOrderRequest {
-  id: number;
-  customerName?: string;
-  customerEmail?: string;
-  orderDate?: string;
-  status?: OrderStatus;
-  orderDetails?: UpdateOrderDetailRequest[];
+export interface CreateOrderCommand {
+  customerName: string;
+  customerEmail: string;
+  orderDate: string;
+  orderDetails: CreateOrderDetailDto[];
 }
 
-export interface UpdateOrderDetailRequest {
-  id?: number;
-  productName?: string;
-  productCode?: string;
-  quantity?: number;
-  unitPrice?: number;
+export interface UpdateOrderCommand {
+  id: number;
+  customerName: string;
+  customerEmail: string;
+  orderDate: string;
+  orderDetails: CreateOrderDetailDto[];
 }
 
 export interface OrderFilters {
-  customerName?: string;
-  startDate?: string;
-  endDate?: string;
-  status?: OrderStatus;
-  productCode?: string;
   pageNumber?: number;
   pageSize?: number;
+  customerFilter?: string;
+  startDate?: string;
+  endDate?: string;
 }
 
-export interface PaginatedResponse<T> {
+export interface PagedResult<T> {
   items: T[];
   totalCount: number;
   pageNumber: number;
@@ -95,7 +67,7 @@ export interface ApiResponse<T> {
 }
 
 export interface LoginRequest {
-  email: string;
+  username: string;
   password: string;
 }
 
