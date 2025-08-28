@@ -6,7 +6,7 @@ import { AuthState, User } from '@/types/api';
 import { AuthService } from '@/lib/services/authService';
 
 interface AuthStore extends AuthState {
-  login: (email: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   setUser: (user: User) => void;
   setToken: (token: string) => void;
@@ -22,17 +22,22 @@ export const useAuthStore = create<AuthStore>()(
       isAuthenticated: false,
       isLoading: false,
 
-      login: async (email: string, password: string) => {
+      login: async (username: string, password: string) => {
+        console.log('AuthStore: Iniciando login con:', { username, password: '***' });
         set({ isLoading: true });
         try {
-          const response = await AuthService.login({ email, password });
+          console.log('AuthStore: Llamando a AuthService.login...');
+          const response = await AuthService.login({ username, password });
+          console.log('AuthStore: Login exitoso, respuesta:', response);
           set({
             user: response.user,
             token: response.token,
             isAuthenticated: true,
             isLoading: false,
           });
+          console.log('AuthStore: Estado actualizado correctamente');
         } catch (error) {
+          console.error('AuthStore: Error en login:', error);
           set({ isLoading: false });
           throw error;
         }

@@ -34,14 +34,31 @@ export class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
+    console.log('ApiClient: Haciendo request a:', url);
+    console.log('ApiClient: Opciones:', { ...options, body: options.body ? '[BODY]' : undefined });
     
-    const headers: HeadersInit = {
+    const headers: Record<string, string> = {
       'Content-Type': 'application/json',
-      ...options.headers,
     };
+
+    // Agregar headers adicionales si existen
+    if (options.headers) {
+      if (options.headers instanceof Headers) {
+        options.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+      } else if (Array.isArray(options.headers)) {
+        options.headers.forEach(([key, value]) => {
+          headers[key] = value;
+        });
+      } else {
+        Object.assign(headers, options.headers);
+      }
+    }
 
     if (this.token) {
       headers.Authorization = `Bearer ${this.token}`;
+      console.log('ApiClient: Token incluido en headers');
     }
 
     const config: RequestInit = {
@@ -50,7 +67,9 @@ export class ApiClient {
     };
 
     try {
+      console.log('ApiClient: Enviando request...');
       const response = await fetch(url, config);
+      console.log('ApiClient: Respuesta recibida:', response.status, response.statusText);
       
       if (!response.ok) {
         let errorMessage = `HTTP error! status: ${response.status}`;
@@ -64,22 +83,29 @@ export class ApiClient {
           // Si no se puede parsear el error, usar el mensaje por defecto
         }
 
+        console.error('ApiClient: Error en respuesta:', errorMessage);
         throw new ApiError(errorMessage, response.status, errors);
       }
 
       // Si la respuesta es 204 (No Content), retornar null
       if (response.status === 204) {
+        console.log('ApiClient: Respuesta 204 - No Content');
         return null as T;
       }
 
       // Intentar parsear la respuesta JSON
       try {
-        return await response.json();
+        const data = await response.json();
+        console.log('ApiClient: Respuesta parseada:', data);
+        return data;
       } catch {
         // Si no es JSON, retornar la respuesta como texto
-        return response.text() as T;
+        const text = await response.text();
+        console.log('ApiClient: Respuesta como texto:', text);
+        return text as T;
       }
     } catch (error) {
+      console.error('ApiClient: Error en request:', error);
       if (error instanceof ApiError) {
         throw error;
       }

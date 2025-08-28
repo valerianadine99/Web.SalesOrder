@@ -8,7 +8,13 @@ import { useAuthStore } from '@/store/authStore';
 import { useOrderStore } from '@/store/orderStore';
 import OrderFilters from '@/components/orders/OrderFilters';
 import OrderTable from '@/components/orders/OrderTable';
-import { Button } from '@/components/ui';
+import { 
+  Button, 
+  CreateOrderModal, 
+  EditOrderModal, 
+ 
+ViewOrderModal 
+} from '@/components/ui';
 import { Order } from '@/types/api';
 import { Plus, LogOut, User, Package } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -18,6 +24,12 @@ export default function DashboardPage() {
   const { fetchOrders, deleteOrder } = useOrderStore();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState<number | null>(null);
+  
+  // Estados para los modales
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     // Si no está autenticado, redirigir al login
@@ -34,25 +46,24 @@ export default function DashboardPage() {
     try {
       await logout();
       router.push('/');
-      toast.success('Sesión cerrada exitosamente');
+      toast('Sesión cerrada exitosamente', { icon: '✅' });
     } catch (error) {
-      toast.error('Error al cerrar sesión');
+      toast('Error al cerrar sesión', { icon: '❌' });
     }
   };
 
   const handleCreateOrder = () => {
-    // TODO: Implementar modal de creación de orden
-    toast.info('Funcionalidad de creación de orden en desarrollo');
+    setIsCreateModalOpen(true);
   };
 
   const handleEditOrder = (order: Order) => {
-    // TODO: Implementar modal de edición de orden
-    toast.info(`Editando orden #${order.id}`);
+    setSelectedOrder(order);
+    setIsEditModalOpen(true);
   };
 
   const handleViewOrder = (order: Order) => {
-    // TODO: Implementar modal de visualización de orden
-    toast.info(`Viendo orden #${order.id}`);
+    setSelectedOrder(order);
+    setIsViewModalOpen(true);
   };
 
   const handleDeleteOrder = async (order: Order) => {
@@ -63,12 +74,26 @@ export default function DashboardPage() {
     setIsDeleting(order.id);
     try {
       await deleteOrder(order.id);
-      toast.success('Orden eliminada exitosamente');
+      toast('Orden eliminada exitosamente', { icon: '✅' });
     } catch (error) {
-      toast.error('Error al eliminar la orden');
+      toast('Error al eliminar la orden', { icon: '❌' });
     } finally {
       setIsDeleting(null);
     }
+  };
+
+  const closeCreateModal = () => {
+    setIsCreateModalOpen(false);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedOrder(null);
+  };
+
+  const closeViewModal = () => {
+    setIsViewModalOpen(false);
+    setSelectedOrder(null);
   };
 
   if (!isAuthenticated) {
@@ -138,8 +163,27 @@ export default function DashboardPage() {
           onEdit={handleEditOrder}
           onView={handleViewOrder}
           onDelete={handleDeleteOrder}
+          isDeleting={isDeleting}
         />
       </main>
+
+      {/* Modales */}
+      <CreateOrderModal
+        isOpen={isCreateModalOpen}
+        onClose={closeCreateModal}
+      />
+
+      <EditOrderModal
+        isOpen={isEditModalOpen}
+        order={selectedOrder}
+        onClose={closeEditModal}
+      />
+
+      <ViewOrderModal
+        isOpen={isViewModalOpen}
+        order={selectedOrder}
+        onClose={closeViewModal}
+      />
 
       {/* Toast Container */}
       <div id="toast-container" />

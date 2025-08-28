@@ -18,8 +18,9 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
-  ({ className, label, error, helperText, options, placeholder, onChange, id, ...props }, ref) => {
-    const selectId = id || `select-${Math.random().toString(36).substr(2, 9)}`;
+  ({ className, label, error, helperText, options, placeholder, onChange, id, name, ...props }, ref) => {
+    // Usar el id proporcionado, o generar uno basado en el name, o usar un fallback estático
+    const selectId = id || (name ? `select-${name}` : 'select-field');
     
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       if (onChange) {

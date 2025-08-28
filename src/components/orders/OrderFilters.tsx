@@ -1,64 +1,35 @@
 // Componente de filtros para órdenes
 
 import React, { useState } from 'react';
-import { Input, Select, Button } from '@/components/ui';
-import { OrderStatus } from '@/types/api';
+import { Input, Button } from '@/components/ui';
 import { useOrderStore } from '@/store/orderStore';
 import { Search, Filter, X } from 'lucide-react';
 
 const OrderFilters: React.FC = () => {
-  const { filters, setFilters, fetchOrders } = useOrderStore();
+  const { fetchOrders } = useOrderStore();
   
   const [localFilters, setLocalFilters] = useState({
-    customerName: filters.customerName || '',
-    startDate: filters.startDate || '',
-    endDate: filters.endDate || '',
-    status: filters.status || '',
-    productCode: filters.productCode || '',
+    customerFilter: '',
+    startDate: '',
+    endDate: '',
   });
-
-  const statusOptions = [
-    { value: '', label: 'Todos los estados' },
-    { value: OrderStatus.Pending, label: 'Pendiente' },
-    { value: OrderStatus.Confirmed, label: 'Confirmado' },
-    { value: OrderStatus.Shipped, label: 'Enviado' },
-    { value: OrderStatus.Delivered, label: 'Entregado' },
-    { value: OrderStatus.Cancelled, label: 'Cancelado' },
-  ];
 
   const handleFilterChange = (key: string, value: string) => {
     setLocalFilters(prev => ({ ...prev, [key]: value }));
   };
 
   const handleApplyFilters = () => {
-    const newFilters = {
-      ...localFilters,
-      pageNumber: 1, // Reset a página 1
-    };
-    setFilters(newFilters);
-    fetchOrders(newFilters);
+    fetchOrders(localFilters);
   };
 
   const handleClearFilters = () => {
     const clearedFilters = {
-      customerName: '',
+      customerFilter: '',
       startDate: '',
       endDate: '',
-      status: '',
-      productCode: '',
-      pageNumber: 1,
-      pageSize: filters.pageSize,
     };
     
-    setLocalFilters({
-      customerName: '',
-      startDate: '',
-      endDate: '',
-      status: '',
-      productCode: '',
-    });
-    
-    setFilters(clearedFilters);
+    setLocalFilters(clearedFilters);
     fetchOrders(clearedFilters);
   };
 
@@ -84,12 +55,12 @@ const OrderFilters: React.FC = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Input
           label="Cliente"
           placeholder="Nombre del cliente"
-          value={localFilters.customerName}
-          onChange={(e) => handleFilterChange('customerName', e.target.value)}
+          value={localFilters.customerFilter}
+          onChange={(e) => handleFilterChange('customerFilter', e.target.value)}
         />
 
         <Input
@@ -105,39 +76,25 @@ const OrderFilters: React.FC = () => {
           value={localFilters.endDate}
           onChange={(e) => handleFilterChange('endDate', e.target.value)}
         />
+      </div>
 
-        <Select
-          label="Estado"
-          options={statusOptions}
-          value={localFilters.status}
-          onChange={(value) => handleFilterChange('status', value)}
-        />
-
-        <Input
-          label="Código Producto"
-          placeholder="Código del producto"
-          value={localFilters.productCode}
-          onChange={(e) => handleFilterChange('productCode', e.target.value)}
-        />
-
-        <div className="flex items-end">
-          <Button
-            onClick={handleApplyFilters}
-            className="w-full"
-            disabled={!hasActiveFilters}
-          >
-            <Search className="w-4 h-4 mr-2" />
-            Buscar
-          </Button>
-        </div>
+      <div className="mt-4 flex justify-end">
+        <Button
+          onClick={handleApplyFilters}
+          className="px-6"
+          disabled={!hasActiveFilters}
+        >
+          <Search className="w-4 h-4 mr-2" />
+          Buscar
+        </Button>
       </div>
 
       {hasActiveFilters && (
         <div className="mt-4 pt-4 border-t border-secondary-200">
           <div className="flex flex-wrap gap-2">
-            {localFilters.customerName && (
+            {localFilters.customerFilter && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary-100 text-primary-800">
-                Cliente: {localFilters.customerName}
+                Cliente: {localFilters.customerFilter}
               </span>
             )}
             {localFilters.startDate && (
@@ -148,16 +105,6 @@ const OrderFilters: React.FC = () => {
             {localFilters.endDate && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary-100 text-secondary-800">
                 Hasta: {new Date(localFilters.endDate).toLocaleDateString()}
-              </span>
-            )}
-            {localFilters.status && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-success-100 text-success-800">
-                Estado: {statusOptions.find(opt => opt.value === localFilters.status)?.label}
-              </span>
-            )}
-            {localFilters.productCode && (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warning-100 text-warning-800">
-                Producto: {localFilters.productCode}
               </span>
             )}
           </div>
