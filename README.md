@@ -132,7 +132,6 @@ La aplicación incluye usuarios de prueba predefinidos:
 
 - **Admin**: `admin@logistics.com` / `admin123`
 - **Usuario**: `user@logistics.com` / `user123`
-- **Manager**: `manager@logistics.com` / `manager123`
 
 ## 🎯 Funcionalidades Implementadas
 
